@@ -4,7 +4,8 @@ import 'my_bookings_screen.dart';
 import 'farmer_profile_screen.dart';
 
 class FarmerMainScreen extends StatefulWidget {
-  const FarmerMainScreen({super.key});
+  final int userId;
+  const FarmerMainScreen({super.key, required this.userId,});
 
   @override
   State<FarmerMainScreen> createState() =>
@@ -16,11 +17,24 @@ class _FarmerMainScreenState
 
   int selectedIndex = 0;
 
-  final screens = [
-    const FarmerHomeScreen(),
-    const MyBookingsScreen(),
-    const FarmerProfileScreen(),
+  late final List<Widget> screens;
+
+@override
+void initState() {
+  super.initState();
+
+  screens = [
+    FarmerHomeScreen(
+      userId: widget.userId,
+    ),
+    MyBookingsScreen(
+      userId: widget.userId,
+    ),
+     FarmerProfileScreen(
+      userId: widget.userId,
+    ),
   ];
+}
 
   @override
   Widget build(BuildContext context) {

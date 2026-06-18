@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import '../models/machine.dart';
+import '../services/machine_service.dart';
 import 'create_booking_screen.dart';
-class FarmerHomeScreen extends StatelessWidget {
-  const FarmerHomeScreen({super.key});
+
+class FarmerHomeScreen extends StatefulWidget {
+  final int userId;
+  const FarmerHomeScreen({super.key,required this.userId,});
+
+  @override
+  State<FarmerHomeScreen> createState() =>
+      _FarmerHomeScreenState();
+}
+
+class _FarmerHomeScreenState
+    extends State<FarmerHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
@@ -12,11 +24,15 @@ class FarmerHomeScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
           children: [
+
             const Text(
-              "Welcome, Ramesh 🌽",
+              "Welcome, Farmer 🌽",
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -26,35 +42,46 @@ class FarmerHomeScreen extends StatelessWidget {
             const SizedBox(height: 10),
 
             const Text(
-              "Andhra Pradesh",
+              "Andhra Pradesh / Telangana",
               style: TextStyle(
                 color: Colors.grey,
                 fontSize: 16,
               ),
             ),
 
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
 
-            SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.agriculture),
-                label: const Text(
-                  "Book Corn Harvester",
-                  style: TextStyle(fontSize: 18),
-                ),
-                onPressed: () {
-                  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const CreateBookingScreen(),
-    ),
-  );
-                }
-                ,
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   height: 60,
+
+            //   child: ElevatedButton.icon(
+            //     icon: const Icon(
+            //       Icons.agriculture,
+            //     ),
+
+            //     label: const Text(
+            //       "Book Corn Harvester",
+            //       style: TextStyle(
+            //         fontSize: 18,
+            //       ),
+            //     ),
+
+            //     onPressed: () {
+
+            //       Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //           builder: (_) =>
+            //               const CreateBookingScreen(
+// machineId: 1,
+//       machineName: "John Deere Harvester",
+            //               ),
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
 
             const SizedBox(height: 30),
 
@@ -62,70 +89,137 @@ class FarmerHomeScreen extends StatelessWidget {
               "Available Harvesters",
               style: TextStyle(
                 fontSize: 20,
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                    FontWeight.bold,
               ),
             ),
 
             const SizedBox(height: 15),
 
             Expanded(
-              child: ListView(
-                children: const [
-                  HarvesterCard(
-                    name: "Ravi Harvester",
-                    location: "West Godavari",
-                    price: "₹2200/Acre",
-                  ),
-                  HarvesterCard(
-                    name: "Mahesh Harvester",
-                    location: "Krishna",
-                    price: "₹2500/Acre",
-                  ),
-                  HarvesterCard(
-                    name: "Suresh Harvester",
-                    location: "Guntur",
-                    price: "₹2300/Acre",
-                  ),
-                ],
+              child: FutureBuilder<List<Machine>>(
+                future:
+                    MachineService.getMachines(),
+
+                builder:
+                    (context, snapshot) {
+
+                  if (snapshot
+                          .connectionState ==
+                      ConnectionState.waiting) {
+                    return const Center(
+                      child:
+                          CircularProgressIndicator(),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        snapshot.error
+                            .toString(),
+                      ),
+                    );
+                  }
+
+                  final machines =
+                      snapshot.data ?? [];
+
+                  if (machines.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        "No machines available",
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount:
+                        machines.length,
+
+                    itemBuilder:
+                        (context, index) {
+
+                      final machine =
+                          machines[index];
+
+                      return Card(
+                        margin:
+                            const EdgeInsets.only(
+                          bottom: 12,
+                        ),
+
+                        child: ListTile(
+                          leading:
+                              const CircleAvatar(
+                            child: Icon(
+                              Icons.agriculture,
+                            ),
+                          ),
+
+                          title: Text(
+                            machine.machineName,
+                          ),
+
+                          subtitle: Text(
+                            "${machine.machineType}\n${machine.district}, ${machine.state}",
+                          ),
+
+                          isThreeLine: true,
+
+                          trailing: Column(
+                            mainAxisAlignment:
+                                MainAxisAlignment.center,
+
+                            children: [
+
+                              Text(
+                                "₹${machine.pricePerAcre}",
+                                style:
+                                    const TextStyle(
+                                  fontWeight:
+                                      FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(
+                                height: 5,
+                              ),
+
+                              SizedBox(
+                                height: 27,
+
+                                child:
+                                    ElevatedButton(
+                                  onPressed:
+                                      () {
+
+                                    Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (_) => CreateBookingScreen(
+      machineId: machine.id,
+      machineName: machine.machineName,
+      farmerId: widget.userId,
+    ),
+  ),
+);
+                                  },
+
+                                  child:
+                                      const Text(
+                                    "Book",
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class HarvesterCard extends StatelessWidget {
-  final String name;
-  final String location;
-  final String price;
-
-  const HarvesterCard({
-    super.key,
-    required this.name,
-    required this.location,
-    required this.price,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: const CircleAvatar(
-          child: Icon(Icons.agriculture),
-        ),
-        title: Text(name),
-        subtitle: Text(location),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(price),
-            const SizedBox(height: 4),
-            const Text(
-              "4.8 ⭐",
-              style: TextStyle(fontSize: 12),
             ),
           ],
         ),

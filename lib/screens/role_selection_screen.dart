@@ -21,31 +21,33 @@ class RoleSelectionScreen extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const FarmerMainScreen(),
-                    ),
-                  );
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (_) => const FarmerMainScreen(
+
+                  //     ),
+                  //   ),
+                  // );
                 },
                 child: const Text("Farmer"),
               ),
             ),
             const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const OwnerDashboardScreen(),
-                    ),
-                  );
-                },
-                child: const Text("Machine Owner"),
-              ),
-            ),
+            // SizedBox(
+            //   width: double.infinity,
+            //   // child: ElevatedButton(
+            //   //   onPressed: () {
+            //   //     Navigator.push(
+            //   //       context,
+            //   //       MaterialPageRoute(
+            //   //         builder: (_) => const OwnerDashboardScreen( userId: userId,),
+            //   //       ),
+            //   //     );
+            //   //   },
+            //     child: const Text("Machine Owner"),
+            //   ),
+            // ),
           ],
         ),
       ),
