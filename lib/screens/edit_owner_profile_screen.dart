@@ -69,7 +69,7 @@ class _EditOwnerProfileScreenState
     var request = http.MultipartRequest(
       "POST",
       Uri.parse(
-        "http://127.0.0.1:8001/api/auth/upload-profile/${widget.userId}",
+        "https://harvester-backend-5lcq.onrender.com/api/auth/upload-profile/${widget.userId}",
       ),
     );
 
@@ -105,7 +105,7 @@ class _EditOwnerProfileScreenState
 
   final response = await http.put(
     Uri.parse(
-      "http://127.0.0.1:8001/api/auth/user/${widget.userId}",
+      "https://harvester-backend-5lcq.onrender.com/api/auth/user/${widget.userId}",
     ),
     headers: {
       "Content-Type": "application/json",
@@ -172,7 +172,7 @@ class _EditOwnerProfileScreenState
                               as ImageProvider
                           : profileImage.isNotEmpty
                               ? NetworkImage(
-                                  "http://127.0.0.1:8001/$profileImage?t=${DateTime.now().millisecondsSinceEpoch}",
+                                  "https://harvester-backend-5lcq.onrender.com/$profileImage?t=${DateTime.now().millisecondsSinceEpoch}",
                                 )
                               : null,
                   child: selectedImage == null &&

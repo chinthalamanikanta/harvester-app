@@ -58,7 +58,7 @@ class _EditMachineScreenState
 
     final response = await http.put(
       Uri.parse(
-        "http://127.0.0.1:8001/api/machines/${widget.machine["id"]}",
+        "https://harvester-backend-5lcq.onrender.com/api/machines/${widget.machine["id"]}",
       ),
       headers: {
         "Content-Type": "application/json",

@@ -8,7 +8,7 @@ class MachineService {
 
     final response = await http.get(
       Uri.parse(
-        "http://127.0.0.1:8001/api/machines/"
+        "https://harvester-backend-5lcq.onrender.com/api/machines/"
       ),
     );
 

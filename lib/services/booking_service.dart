@@ -12,7 +12,7 @@ class BookingService {
 
     final response = await http.post(
       Uri.parse(
-        "http://127.0.0.1:8001/api/bookings/create",
+        "https://harvester-backend-5lcq.onrender.com/api/bookings/create",
       ),
 
       headers: {

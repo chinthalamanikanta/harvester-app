@@ -22,69 +22,85 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> login() async {
 
-    final phone = phoneController.text.trim();
-    final password = passwordController.text.trim();
+  final phone = phoneController.text.trim();
 
-    final response = await http.post(
-      Uri.parse(
-        "http://127.0.0.1:8001/api/auth/login?phone=$phone&password=$password",
+  if (phone.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Please enter phone number",
+        ),
       ),
     );
+    return;
+  }
 
-    if (response.statusCode == 200) {
+  if (!RegExp(r'^[0-9]{10}$').hasMatch(phone)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Enter valid 10 digit phone number",
+        ),
+      ),
+    );
+    return;
+  }
 
-      final data = jsonDecode(response.body);
-      print("*********");
-      int userId = data["user_id"];
-      
-      String token = data["access_token"];
-
-      final role = data["role"];
-
-      final prefs =
-    await SharedPreferences.getInstance();
-
-await prefs.setInt(
-  "userId",
-  data["user_id"],
-);
-
-await prefs.setString(
-  "role",
-  data["role"],
-);
-
-if (role == "FARMER") {
-
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => FarmerMainScreen(userId: userId,),
+  final response = await http.post(
+    Uri.parse(
+      "https://harvester-backend-5lcq.onrender.com/api/auth/login?phone=$phone",
     ),
   );
 
-} else if (role == "OWNER") {
+  if (response.statusCode == 200) {
 
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => OwnerMainScreen(
+    final data = jsonDecode(response.body);
+    
+
+    int userId = data["user_id"];
+    String role = data["role"];
+
+    final prefs = await SharedPreferences.getInstance();
+
+await prefs.setInt("userId", userId);
+await prefs.setString("role", role);
+await prefs.setBool("isLoggedIn", true);
+
+    if (role == "FARMER") {
+
+      Navigator.pushAndRemoveUntil(
+  context,
+  MaterialPageRoute(
+    builder: (_) => FarmerMainScreen(
       userId: userId,
     ),
-    ),
-  );
+  ),
+  (route) => false,
+);
 
-}
+    } else if (role == "OWNER") {
 
-    } else {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Invalid Login"),
-        ),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (_) => OwnerMainScreen(
+            userId: userId,
+          ),
+        ), (route)=> false,
       );
     }
+
+  } else {
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Phone number not registered",
+        ),
+      ),
+    );
   }
+}
 
   @override
   void dispose() {
@@ -94,66 +110,211 @@ if (role == "FARMER") {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Login"),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: Container(
+      width: double.infinity,
+      height: double.infinity,
 
-            TextField(
-              controller: phoneController,
-              decoration: const InputDecoration(
-                labelText: "Phone Number",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            TextField(
-              controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: login,
-                child: const Text("Login"),
-              ),
-            ),
-            const SizedBox(height: 15),
-
-TextButton(
-  onPressed: () {
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) =>
-            const RegisterScreen(),
-      ),
-    );
-
-  },
-  child: const Text(
-    "Don't have an account? Register",
-  ),
-),
-
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.green.shade700,
+            Colors.green.shade400,
           ],
         ),
       ),
-    );
-  }
+
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+
+            child: Column(
+              children: [
+
+                const SizedBox(height: 40),
+
+                Container(
+                  padding: const EdgeInsets.all(20),
+
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+
+                  child: const Icon(
+                    Icons.agriculture,
+                    size: 80,
+                    color: Colors.white,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                const Text(
+                  "Harvester Connect",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                const Text(
+                  "Connecting Farmers & Machine Owners",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white70,
+                  ),
+                ),
+
+                const SizedBox(height: 40),
+
+                Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.circular(20),
+                  ),
+
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.all(20),
+
+                    child: Column(
+                      children: [
+
+                        const Text(
+                          "Login",
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight:
+                                FontWeight.bold,
+                          ),
+                        ),
+
+                        const SizedBox(height: 25),
+
+                        TextField(
+                          controller:
+                              phoneController,
+                          keyboardType:
+                              TextInputType.phone,
+                          maxLength: 10,
+
+                          decoration:
+                              InputDecoration(
+                            labelText:
+                                "Phone Number",
+
+                            prefixIcon:
+                                const Icon(
+                              Icons.phone,
+                              color:
+                                  Colors.green,
+                            ),
+
+                            border:
+                                OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius
+                                      .circular(
+                                12,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 20),
+
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+
+                          child:
+                              ElevatedButton(
+                            onPressed: login,
+
+                            style:
+                                ElevatedButton
+                                    .styleFrom(
+                              backgroundColor:
+                                  Colors.green,
+
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  12,
+                                ),
+                              ),
+                            ),
+
+                            child:
+                                const Text(
+                              "Login",
+                              style:
+                                  TextStyle(
+                                fontSize:
+                                    18,
+                                color: Colors
+                                    .white,
+                                fontWeight:
+                                    FontWeight
+                                        .bold,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    const RegisterScreen(),
+                              ),
+                            );
+                          },
+
+                          child: const Text(
+                            "New User? Register Here",
+                            style: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 25),
+
+                const Text(
+                  "🌾 Farmers • 🚜 Harvesters • 📍 Easy Booking",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
 }
+  }

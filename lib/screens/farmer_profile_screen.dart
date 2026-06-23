@@ -39,7 +39,7 @@ class _FarmerProfileScreenState
 
     final response = await http.get(
       Uri.parse(
-        "http://127.0.0.1:8001/api/auth/user/${widget.userId}",
+        "https://harvester-backend-5lcq.onrender.com/api/auth/user/${widget.userId}",
       ),
     );
 
@@ -114,7 +114,7 @@ class _FarmerProfileScreenState
   backgroundImage:
       profileImage.isNotEmpty
           ? NetworkImage(
-              "http://127.0.0.1:8001/$profileImage?t=${DateTime.now().millisecondsSinceEpoch}",
+              "https://harvester-backend-5lcq.onrender.com/$profileImage?t=${DateTime.now().millisecondsSinceEpoch}",
             )
           : null,
 

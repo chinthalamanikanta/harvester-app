@@ -46,7 +46,7 @@ class _OwnerBookingsScreenState
 
     final response = await http.get(
       Uri.parse(
-        "http://127.0.0.1:8001/api/bookings/owner/${widget.ownerId}",
+        "https://harvester-backend-5lcq.onrender.com/api/bookings/owner/${widget.ownerId}",
       ),
     );
 
@@ -73,7 +73,7 @@ class _OwnerBookingsScreenState
 
     await http.put(
       Uri.parse(
-        "http://127.0.0.1:8001/api/bookings/$bookingId/$action",
+        "https://harvester-backend-5lcq.onrender.com/api/bookings/$bookingId/$action",
       ),
     );
 

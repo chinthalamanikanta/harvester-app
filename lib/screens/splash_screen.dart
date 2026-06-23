@@ -24,61 +24,29 @@ class _SplashScreenState
   }
 
   Future<void> checkLogin() async {
+  final prefs = await SharedPreferences.getInstance();
 
-    await Future.delayed(
-      const Duration(seconds: 2),
-    );
+  bool isLoggedIn =
+      prefs.getBool("isLoggedIn") ?? false;
 
-    final prefs =
-        await SharedPreferences.getInstance();
+  int? userId = prefs.getInt("userId");
+  String? role = prefs.getString("role");
 
-    bool isLoggedIn =
-        prefs.getBool("isLoggedIn") ?? false;
+  if (isLoggedIn &&
+      userId != null &&
+      role != null) {
 
-    int userId =
-        prefs.getInt("userId") ?? 0;
+    if (role == "FARMER") {
 
-    String role =
-        prefs.getString("role") ?? "";
-
-    if (!mounted) return;
-
-    if (isLoggedIn) {
-
-      if (role == "FARMER") {
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                FarmerMainScreen(
-              userId: userId,
-            ),
-          ),
-        );
-
-      } else if (role == "OWNER") {
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                OwnerMainScreen(
-              userId: userId,
-            ),
-          ),
-        );
-
-      } else {
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) =>
-                const LoginScreen(),
-          ),
-        );
-      }
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              FarmerMainScreen(
+                userId: userId,
+              ),
+        ),
+      );
 
     } else {
 
@@ -86,11 +54,24 @@ class _SplashScreenState
         context,
         MaterialPageRoute(
           builder: (_) =>
-              const LoginScreen(),
+              OwnerMainScreen(
+                userId: userId,
+              ),
         ),
       );
     }
+
+  } else {
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            const LoginScreen(),
+      ),
+    );
   }
+}
 
   @override
   Widget build(BuildContext context) {
